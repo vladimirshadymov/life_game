@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Executors;
@@ -169,9 +170,26 @@ public class Window extends JFrame {
         save_to_file_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                JFileChooser chooser = new JFileChooser();
+                //chooser.setCurrentDirectory(new File("/home/me/Documents"));
+                int retrival = chooser.showSaveDialog(null);
+                if (retrival == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        FileWriter file_to_write = new FileWriter(chooser.getSelectedFile()+".txt");
+                        for (int i=0; i<x; ++i){
+                            StringBuilder sb = new StringBuilder();
+                            for (int j=0; j<y; ++j){
+                                sb.append(field[i][j]);
+                                sb.append(" ");
+                            }
+                            file_to_write.write(sb.toString()+"\n");
+                        }
+                        file_to_write.close();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
-
         });
 
         addMouseListener(new MouseAdapter() {
