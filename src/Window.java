@@ -5,6 +5,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -71,6 +75,11 @@ public class Window extends JFrame {
         JButton set_glider = new JButton("Set simple glider");
         panel.add(set_glider);
 
+        JButton load_file_button = new JButton("Load file");
+        panel.add(load_file_button);
+
+        JButton save_to_file_button = new JButton("Save to file");
+        panel.add(save_to_file_button);
 
         start_button.addActionListener(new ActionListener() {
             @Override
@@ -101,7 +110,6 @@ public class Window extends JFrame {
         set_glider.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                field = new int[input_field.length][input_field[0].length];
                 field[8][4] = 1;
                 field[8][5] = 1;
                 field[8][6] = 1;
@@ -118,6 +126,52 @@ public class Window extends JFrame {
                 stopLife();
                 Window.super.repaint();
             }
+        });
+
+        load_file_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileopen = new JFileChooser();
+                int ret = fileopen.showDialog(null, "Open file");
+                if (ret == JFileChooser.APPROVE_OPTION) {
+                    String file_path = fileopen.getSelectedFile().getAbsolutePath();
+                    try {
+                        List<List<Integer>> new_listed_field = new ArrayList<List<Integer>>();
+                        BufferedReader input_file_br = new BufferedReader(new FileReader(file_path));
+                        for(String line; (line = input_file_br.readLine()) != null; ) {
+                            List<Integer> tmp_line = new ArrayList<Integer>();
+                            Scanner scanner = new Scanner(line);
+                            while (scanner.hasNextInt()) {
+                                tmp_line.add(scanner.nextInt());
+                            }
+                            new_listed_field.add(tmp_line);
+                        }
+                        x = new_listed_field.size();
+                        y = new_listed_field.get(0).size();
+                        field = new int[x][y];
+                        init_field = new int[x][y];
+
+                        for (int i=0; i<x; ++i){
+                            for (int j=0; j<y; ++j){x = new_listed_field.size();
+                                field[i][j] = new_listed_field.get(i).get(j);
+                                init_field[i][j] = new_listed_field.get(i).get(j);
+                            }
+                        }
+                        Window.super.repaint();
+                    } catch (IOException ex){
+                        System.out.println("File READ error found");
+                    }
+                }
+            }
+        });
+
+
+        save_to_file_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+
         });
 
         addMouseListener(new MouseAdapter() {
